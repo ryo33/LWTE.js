@@ -1,2 +1,2 @@
 # LWJSTE
-It's a Light Weight JavaScript Template Engine.
+It's the Light Weight JavaScript Template Engine.
