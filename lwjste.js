@@ -4,7 +4,7 @@ function LWJSTE(){
 }
 LWJSTE.prototype = {
     _parseTemplate : function(str){
-        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, LITERAL = 8, L_CB = 9, R_CB = 10, OPERATOR = 11, EACH_END = 12, IF_END = 13, SWITCH_END = 14;
+        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, LITERAL = 8, L_CB = 9, R_CB = 10, OPERATOR = 11, EACH_END = 12, IF_END = 13, SWITCH_END = 14, DEFAULT = 15;
         var tokens = [];
         var token = "";
         var literal = true;
@@ -27,6 +27,7 @@ LWJSTE.prototype = {
                 case "/each": push(EACH_END, token); break;
                 case "switch": push(SWITCH, token); break;
                 case "case": push(CASE, token); break;
+                case "default": push(DEFAULT, token); break;
                 case "/switch": push(SWITCH_END, token); break;
                 default: push(ID, token);
             }
