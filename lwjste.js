@@ -17,6 +17,20 @@ LWJSTE.prototype = {
                 token = "";
             }
         }
+        function push_reserved_word(token){
+            switch(token.toLowerCase()){
+                case "if": push(IF, token); break;
+                case "elif": push(ELIF, token); break;
+                case "else": push(ELSE, token); break;
+                case "/if": push(IF_END, token); break;
+                case "each": push(EACH, token); break;
+                case "/each": push(EACH_END, token); break;
+                case "switch": push(SWITCH, token); break;
+                case "case": push(CASE, token); break;
+                case "/switch": push(SWITCH_END, token); break;
+                default: push(ID, token);
+            }
+        }
         for(var i = 0, len = str.length; i < len; i ++){
             if(literal){
                 if(last_is_escape){
@@ -40,35 +54,14 @@ LWJSTE.prototype = {
             }else{
                 if(str[i] == "}"){
                     if(token.length != 0){
-                        if(pushed){
-                            push(LITERAL, token);
-                        }else{
-                            push(ID, token);
-                        }
+                        push_reserved_word(token);
                     }
                     push(R_CB, "}");
                     pushed = false;
                     literal = true;
                 }else if(str[i] == " " || operators.indexOf(str[i]) != -1){
                     if(token.length != 0){
-                        if(pushed){
-                            push(ID, token);
-                        }else{
-                            pushed = true;
-                            switch(token.toLowerCase()){
-                                case "if": push(IF, token); break;
-                                case "elif": push(ELIF, token); break;
-                                case "else": push(ELSE, token); break;
-                                case "/if": push(IF_END, token); break;
-                                case "each": push(EACH, token); break;
-                                case "/each": push(EACH_END, token); break;
-                                case "switch": push(SWITCH, token); break;
-                                case "case": push(CASE, token); break;
-                                case "/switch": push(SWITCH_END, token); break;
-                                default: pushed = false;
-                                    //TODO error
-                            }
-                        }
+                        push_reserved_word(token);
                     }
                     if(str[i] != " "){
                         push(OPERATOR, str[i]);
