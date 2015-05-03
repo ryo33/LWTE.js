@@ -4,18 +4,15 @@ function LWJSTE(){
     arguments.callee.IF = 0;
     arguments.callee.EACH = 1;
     arguments.callee.SWITCH = 2;
-    arguments.callee.AND = 3;
-    arguments.callee.OR = 4;
 }
 LWJSTE.prototype = {
     _parseTemplate : function(str){
-        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, LITERAL = 8, L_CB = 9, R_CB = 10, OPERATOR = 11, EACH_END = 12, IF_END = 13, SWITCH_END = 14, DEFAULT = 15;
+        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, LITERAL = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14, DEFAULT = 11;
         var tokens = [];
         //lexer
         var token = "";
         var literal = true;
         var last_is_escape = false;
-        var operators = ["(", ")", "&", "|"];
         var pushed = false;
         function success(result){
             return [0, result];
@@ -72,12 +69,9 @@ LWJSTE.prototype = {
                     push(R_CB, "}");
                     pushed = false;
                     literal = true;
-                }else if(str[i] == " " || operators.indexOf(str[i]) != -1){
+                }else if(str[i] == " "){
                     if(token.length != 0){
                         push_reserved_word(token);
-                    }
-                    if(str[i] != " "){
-                        push(OPERATOR, str[i]);
                     }
                 }else{
                     token += str[i];
@@ -128,8 +122,6 @@ LWJSTE.prototype = {
                 node = node[indexes[i]];
             }
         }
-        function parse_expression(tokens){
-        }
         while(progress < token_length){
             get_current_node();
             if(! cb_open){
@@ -155,7 +147,7 @@ LWJSTE.prototype = {
                                 if_opens ++;
                                 else_used.push(false);
                                 drop(in_cb, 0);
-                                node.push([LWJSTE.IF, [[parse_expression(in_cb), []]], []]);
+                                node.push([LWJSTE.IF, [[in_cb, []]], []]);
                                 move_node_child();
                                 move_node_child(1);
                                 move_node_child(0);
@@ -169,7 +161,7 @@ LWJSTE.prototype = {
                                 drop(in_cb, 0);
                                 move_node_parent(2);
                                 get_current_node();
-                                node.push([parse_expression(in_cb), []]);
+                                node.push([in_cb, []]);
                                 move_node_child();
                                 move_node_child(1);
                             }
@@ -180,9 +172,7 @@ LWJSTE.prototype = {
                             }else{
                                 else_used[if_opens] = true;
                                 move_node_parent(3);
-                                get_current_node();
-                                node.push([]);
-                                move_node_child(0);
+                                move_node_child(2);
                             }
                             break;
                         case IF_END:
@@ -193,7 +183,7 @@ LWJSTE.prototype = {
                                     drop(else_used, if_opens);
                                     move_node_parent(2);
                                 }else{
-                                    move_node_parent(3);
+                                    move_node_parent(4);
                                 }
                                 if_opens --;
                             }
@@ -237,7 +227,7 @@ LWJSTE.prototype = {
                                     get_current_node();
                                 }
                                 drop(in_cb, 0);
-                                node.push([parse_expression(in_cb), []]);
+                                node.push([in_cb, []]);
                                 move_node_child();
                                 move_node_child(1);
                                 case_used[switch_opens] = true;
