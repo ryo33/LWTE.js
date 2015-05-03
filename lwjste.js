@@ -4,6 +4,8 @@ function LWJSTE(){
     arguments.callee.IF = 0;
     arguments.callee.EACH = 1;
     arguments.callee.SWITCH = 2;
+    arguments.callee.LITERAL = 3;
+    arguments.callee.VARIABLE = 4;
 }
 LWJSTE.prototype = {
     _parseTemplate : function(str){
@@ -122,12 +124,19 @@ LWJSTE.prototype = {
                 node = node[indexes[i]];
             }
         }
+        function format_statement(){
+            var result = [];
+            for(var i = 1, len = in_cb.length; i < len; i ++){
+                result.push(in_cb[i][1]);
+            }
+            return result;
+        }
         while(progress < token_length){
             get_current_node();
             if(! cb_open){
                 switch(tokens[progress][0]){
                     case LITERAL:
-                        node.push(tokens[progress]);
+                        node.push([LWJSTE.LITERAL, tokens[progress][1]]);
                         break;
                     case L_CB:
                         cb_open = true;
@@ -146,8 +155,7 @@ LWJSTE.prototype = {
                             }else{
                                 if_opens ++;
                                 else_used.push(false);
-                                drop(in_cb, 0);
-                                node.push([LWJSTE.IF, [[in_cb, []]], []]);
+                                node.push([LWJSTE.IF, [[format_statement(), []]], []]);
                                 move_node_child();
                                 move_node_child(1);
                                 move_node_child(0);
@@ -161,7 +169,7 @@ LWJSTE.prototype = {
                                 drop(in_cb, 0);
                                 move_node_parent(2);
                                 get_current_node();
-                                node.push([in_cb, []]);
+                                node.push([format_statement(), []]);
                                 move_node_child();
                                 move_node_child(1);
                             }
@@ -193,7 +201,7 @@ LWJSTE.prototype = {
                                 //TODO error
                             }else{
                                 each_opens ++;
-                                node.push([LWJSTE.EACH, in_cb[1], []]);
+                                node.push([LWJSTE.EACH, in_cb[1][1], []]);
                                 move_node_child();
                                 move_node_child(2);
                             }
@@ -226,8 +234,7 @@ LWJSTE.prototype = {
                                     parent_nodes(2);
                                     get_current_node();
                                 }
-                                drop(in_cb, 0);
-                                node.push([in_cb, []]);
+                                node.push([format_statement(), []]);
                                 move_node_child();
                                 move_node_child(1);
                                 case_used[switch_opens] = true;
@@ -260,6 +267,11 @@ LWJSTE.prototype = {
                             }
                             break;
                         case ID:
+                            if(in_cb.length != 1){
+                                //TODO error
+                            }else{
+                                node.push([LWJSTE.VARIABLE, tokens[progress][1]]);
+                            }
                             break;
                         default:
                             //TODO error
