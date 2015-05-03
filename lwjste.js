@@ -339,7 +339,31 @@ LWJSTE.prototype = {
     addTemplate : function(name, template){
         this.templates[name] = this._parseTemplate(template);
     },
-    useTemplate : function(selector, name, template){
+    _useTemplate : function(template, data){
+        var result = "";
+        var template = this.templates[name];
+        for(var i = 0, len = template.length; i < len; i ++){
+            switch(template[i][0]){
+                case this.LITERAL:
+                    result += template[i][1];
+                    break;
+                case this.VARIABLE:
+                    result += data[template[i][1]];
+                    break;
+                case this.EACH:
+                    for(var j = 0, len = data[template[i][1]].length; j < len; j ++){
+                        result += this._useTemplate(template[i][2], data[template[i][1][j]]);
+                    }
+                    break;
+                case this.IF:
+                    break;
+                case this.SWITCH:
+                    break;
+            }
+        }
+    }
+    useTemplate : function(name, data){
+        return this.useTemplate(this.templates[name], data);
     },
     removeTemplate : function(name){
         if(name == null){
