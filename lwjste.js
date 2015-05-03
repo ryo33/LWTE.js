@@ -252,7 +252,7 @@ LWJSTE.prototype = {
                             }
                             break;
                         case SWITCH_END:
-                            if(switch_opens == 0 || in_cb.length != 1){
+                            if(switch_opens == 0 || case_used[switch_opens] == false || in_cb.length != 1){
                                 //TODO error
                             }else{
                                 console.log("fe;waoifjew");
