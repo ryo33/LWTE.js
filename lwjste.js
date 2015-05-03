@@ -95,7 +95,7 @@ LWJSTE.prototype = {
         var in_cb = []; //tokens in curly brackets
         var if_opens = 0, else_used = []; //used when in if blocks
         var each_opens = 0; //used when in each blocks
-        var switch_opens = 0, case_used = false, default_used = []; //used when in switch blocks
+        var switch_opens = 0, case_used = [], default_used = []; //used when in switch blocks
         function drop(array, index){
             array.splice(index, 1);
         }
@@ -122,6 +122,8 @@ LWJSTE.prototype = {
             for(var i = 0, len = indexes.length; i < len; i ++){
                 node = node[indexes[i]];
             }
+        }
+        function parse_expression(tokens){
         }
         while(progress < token_length){
             get_current_node();
@@ -233,12 +235,14 @@ LWJSTE.prototype = {
                                 node.push([parse_expression(in_cb), []]);
                                 move_node_child();
                                 move_node_child(1);
+                                case_used[switch_opens] = true;
                             }
                             break;
                         case DEFAULT:
                             if(switch_opens == 0 || default_used[switch_opens] || in_cb.length != 1){
                                 //TODO error
                             }else{
+                                default_used[switch_opens] = true;
                                 if(case_used[switch_opens]){
                                     move_node_parent(3);
                                 }else{
@@ -251,11 +255,13 @@ LWJSTE.prototype = {
                             if(switch_opens == 0 || in_cb.length != 1){
                                 //TODO error
                             }else{
+                                console.log("fe;waoifjew");
                                 if(default_used[switch_opens]){
                                     move_node_parent(2);
                                 }else if(case_used[switch_opens]){
                                     move_node_parent(4);
                                 }
+                                switch_opens --;
                             }
                             break;
                         case ID:
