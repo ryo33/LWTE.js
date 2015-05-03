@@ -21,7 +21,7 @@ LWJSTE.prototype = {
             return [0, result];
         }
         function faild_token(token, message){
-            return [1, message, [token[2], token[1]]];
+            return [1, message == undefined ? "" : message, [token[2], token[1]]];
         }
         function faild_message(message){
             return [1, message, []];
@@ -87,10 +87,12 @@ LWJSTE.prototype = {
                 }
             }
         }
-        if(literal && token.length != 0){
-            push(LITERAL, token);
+        if(literal){
+            if(token.length != 0){
+                push(LITERAL, token);
+            }
         }else{
-            //TODO error
+            return faild_message("unclosed curly brackets");
         }
         //syntactic analysis
         var progress = 0;
@@ -166,8 +168,7 @@ LWJSTE.prototype = {
         }
         while(progress < token_length){
             if(unexpected_tokens.indexOf(tokens[progress][0]) != -1){
-                //TODO error
-                console.log(tokens[progress][1] + "aaaa");
+                return faild_token(tokens[progress], "unexpected token");
             }
             get_current_node();
             if(! cb_open){
@@ -179,8 +180,6 @@ LWJSTE.prototype = {
                         cb_open = true;
                         in_cb = [];
                         break;
-                    default:
-                        //TODO error
                 }
             }else{
                 if(tokens[progress][0] == R_CB){
@@ -188,7 +187,7 @@ LWJSTE.prototype = {
                     switch(in_cb[0][0]){
                         case IF:
                             if(in_cb.length == 1){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 if_opens ++;
                                 else_used.push(false);
@@ -202,7 +201,7 @@ LWJSTE.prototype = {
                             break;
                         case ELIF:
                             if(if_opens == 0 || in_cb.length == 1 || else_used[if_opens]){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 drop(in_cb, 0);
                                 move_node_parent(2);
@@ -214,7 +213,7 @@ LWJSTE.prototype = {
                             break;
                         case ELSE:
                             if(if_opens == 0 || else_used[if_opens] || in_cb.length != 1){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 else_used[if_opens] = true;
                                 move_node_parent(3);
@@ -224,7 +223,7 @@ LWJSTE.prototype = {
                             break;
                         case IF_END:
                             if(if_opens == 0 || in_cb.length != 1){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 if(else_used[if_opens]){
                                     drop(else_used, if_opens);
@@ -238,7 +237,7 @@ LWJSTE.prototype = {
                             break;
                         case EACH:
                             if(in_cb.length != 2){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 each_opens ++;
                                 node.push([LWJSTE.EACH, in_cb[1][1], []]);
@@ -249,7 +248,7 @@ LWJSTE.prototype = {
                             break;
                         case EACH_END:
                             if(each_opens == 0 || in_cb.length != 1){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 move_node_parent(2);
                                 each_opens --;
@@ -258,7 +257,7 @@ LWJSTE.prototype = {
                             break;
                         case SWITCH:
                             if(in_cb.length != 2){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 switch_opens ++;
                                 case_used.push(false);
@@ -272,7 +271,7 @@ LWJSTE.prototype = {
                             break;
                         case CASE:
                             if(switch_opens == 0 || default_used[switch_opens] || in_cb.length == 1){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 if(case_used[switch_opens]){
                                     parent_nodes(2);
@@ -287,7 +286,7 @@ LWJSTE.prototype = {
                             break;
                         case DEFAULT:
                             if(switch_opens == 0 || default_used[switch_opens] || in_cb.length != 1){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 default_used[switch_opens] = true;
                                 if(case_used[switch_opens]){
@@ -302,7 +301,7 @@ LWJSTE.prototype = {
                             break;
                         case SWITCH_END:
                             if(switch_opens == 0 || case_used[switch_opens] == false || in_cb.length != 1){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 if(default_used[switch_opens]){
                                     move_node_parent(2);
@@ -315,19 +314,25 @@ LWJSTE.prototype = {
                             break;
                         case ID:
                             if(in_cb.length != 1){
-                                //TODO error
+                                return faild_token(tokens[progress]);
                             }else{
                                 node.push([LWJSTE.VARIABLE, tokens[progress][1]]);
                             }
                             break;
                         default:
-                            //TODO error
+                            return faild_token(tokens[progress]);
                     }
                     in_cb = [];
                 }
                 in_cb.push(tokens[progress]);
             }
             progress ++;
+        }
+        if(switch_opens > 0 || if_opens > 0 || each_opens > 0){
+            var if_c = if_opens > 0 ? " " + if_opens + " if" : "";
+            var each_c = each_opens > 0 ? " " + each_opens + " each" : "";
+            var switch_c = switch_opens > 0 ? " " + switch_opens + " switch" : "";
+            return faild_message("found not closed" + if_c + each_c + switch_c);
         }
         return success(result);
     },
