@@ -95,7 +95,7 @@ LWJSTE.prototype = {
         var in_cb = []; //tokens in curly brackets
         var if_opens = 0, else_used = []; //used when in if blocks
         var each_opens = 0; //used when in each blocks
-        var switch_opens = 0, default_used = []; //used when in switch blocks
+        var switch_opens = 0, case_used = false, default_used = []; //used when in switch blocks
         function drop(array, index){
             array.splice(index, 1);
         }
@@ -107,7 +107,10 @@ LWJSTE.prototype = {
                 move_node_parent(count - 1);
             }
         }
-        function move_node_child(depth, index){
+        function move_node_child(index){
+            if(index == undefined){
+                index = node.length - 1;
+            }
             parent_nodes.push(indexes[indexes.length - 1]);
             indexes.push(index);
         }
@@ -142,10 +145,11 @@ LWJSTE.prototype = {
                             if(in_cb.length == 1){
                                 //TODO error
                             }else{
+                                if_opens ++;
                                 else_used.push(false);
                                 drop(in_cb, 0);
                                 node.push([IF, [[parse_expression(in_cb), []]], []]);
-                                move_node_child(node.length - 1);
+                                move_node_child();
                                 move_node_child(1);
                                 move_node_child(0);
                                 move_node_child(1);
@@ -157,9 +161,9 @@ LWJSTE.prototype = {
                             }else{
                                 drop(in_cb, 0);
                                 move_node_parent(2);
-                                node = get_current_node();
+                                get_current_node();
                                 node.push([parse_expression(in_cb), []]);
-                                move_node_child(node.length - 1);
+                                move_node_child();
                                 move_node_child(1);
                             }
                             break;
@@ -169,7 +173,7 @@ LWJSTE.prototype = {
                             }else{
                                 else_used[if_opens] = true;
                                 move_node_parent(3);
-                                node = get_current_node();
+                                get_current_node();
                                 node.push([]);
                                 move_node_child(0);
                             }
@@ -190,35 +194,68 @@ LWJSTE.prototype = {
                         case EACH:
                             if(in_cb.length != 2){
                                 //TODO error
+                            }else{
+                                each_opens ++;
+                                node.push([EACH, in_cb[1], []]);
+                                move_node_child();
+                                move_node_child(2);
                             }
                             break;
                         case EACH_END:
                             if(each_opens == 0 || in_cb.length != 1){
                                 //TODO error
                             }else{
+                                move_node_parent(2);
+                                each_opens --;
                             }
                             break;
                         case SWITCH:
                             if(in_cb.length != 2){
                                 //TODO error
+                            }else{
+                                switch_opens ++;
+                                case_used.push(false);
+                                default_used.push(false);
+                                node.push([SWITCH, in_cb[1], [], []]);
+                                move_node_child();
+                                move_node_child(2);
                             }
                             break;
                         case CASE:
                             if(switch_opens == 0 || default_used[switch_opens] || in_cb.length == 1){
                                 //TODO error
                             }else{
+                                if(case_used[switch_opens]){
+                                    parent_nodes(2);
+                                    get_current_node();
+                                }
+                                drop(in_cb, 0);
+                                node.push([parse_expression(in_cb), []]);
+                                move_node_child();
+                                move_node_child(1);
                             }
                             break;
                         case DEFAULT:
                             if(switch_opens == 0 || default_used[switch_opens] || in_cb.length != 1){
                                 //TODO error
                             }else{
+                                if(case_used[switch_opens]){
+                                    move_node_parent(3);
+                                }else{
+                                    move_node_parent();
+                                }
+                                move_node_child(3);
                             }
                             break;
                         case SWITCH_END:
                             if(switch_opens == 0 || in_cb.length != 1){
                                 //TODO error
                             }else{
+                                if(default_used[switch_opens]){
+                                    move_node_parent(2);
+                                }else if(case_used[switch_opens]){
+                                    move_node_parent(4);
+                                }
                             }
                             break;
                         case ID:
