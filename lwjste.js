@@ -13,18 +13,22 @@ LWJSTE.prototype = {
         var tokens = [];
         //lexer
         var token = "";
+        var lines_count = 1;
         var literal = true;
         var last_is_escape = false;
         var pushed = false;
         function success(result){
             return [0, result];
         }
-        function faild(result){
-            return [1, result];
+        function faild_token(token, message){
+            return [1, message, [token[2], token[1]]];
+        }
+        function faild_message(message){
+            return [1, message, []];
         }
         function push(type, lexeme){
             if(lexeme.length != 0){
-                tokens.push([type, lexeme]);
+                tokens.push([type, lexeme, lines_count]);
                 token = "";
             }
         }
@@ -44,6 +48,9 @@ LWJSTE.prototype = {
             }
         }
         for(var i = 0, len = str.length; i < len; i ++){
+            if(str[i] == "\n"){
+                lines_count ++;
+            }
             if(literal){
                 if(last_is_escape){
                     last_is_escape = false;
