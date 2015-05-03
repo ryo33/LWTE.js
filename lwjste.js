@@ -1,6 +1,11 @@
 function LWJSTE(){
     this.templates = {};
     arguments.callee.escape_character = "#";
+    arguments.callee.IF = 0;
+    arguments.callee.EACH = 1;
+    arguments.callee.SWITCH = 2;
+    arguments.callee.AND = 3;
+    arguments.callee.OR = 4;
 }
 LWJSTE.prototype = {
     _parseTemplate : function(str){
@@ -150,7 +155,7 @@ LWJSTE.prototype = {
                                 if_opens ++;
                                 else_used.push(false);
                                 drop(in_cb, 0);
-                                node.push([IF, [[parse_expression(in_cb), []]], []]);
+                                node.push([LWJSTE.IF, [[parse_expression(in_cb), []]], []]);
                                 move_node_child();
                                 move_node_child(1);
                                 move_node_child(0);
@@ -198,7 +203,7 @@ LWJSTE.prototype = {
                                 //TODO error
                             }else{
                                 each_opens ++;
-                                node.push([EACH, in_cb[1], []]);
+                                node.push([LWJSTE.EACH, in_cb[1], []]);
                                 move_node_child();
                                 move_node_child(2);
                             }
@@ -218,7 +223,7 @@ LWJSTE.prototype = {
                                 switch_opens ++;
                                 case_used.push(false);
                                 default_used.push(false);
-                                node.push([SWITCH, in_cb[1], [], []]);
+                                node.push([LWJSTE.SWITCH, in_cb[1], [], []]);
                                 move_node_child();
                                 move_node_child(2);
                             }
