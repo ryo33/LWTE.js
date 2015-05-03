@@ -316,7 +316,7 @@ LWJSTE.prototype = {
                             if(in_cb.length != 1){
                                 return faild_token(tokens[progress]);
                             }else{
-                                node.push([LWJSTE.VARIABLE, tokens[progress][1]]);
+                                node.push([LWJSTE.VARIABLE, in_cb[0][1]]);
                             }
                             break;
                         default:
