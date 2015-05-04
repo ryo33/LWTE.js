@@ -6,10 +6,11 @@ function LWJSTE(){
     arguments.callee.SWITCH = 2;
     arguments.callee.LITERAL = 3;
     arguments.callee.VARIABLE = 4;
+    arguments.callee.USE = 5;
 }
 LWJSTE.prototype = {
     _parseTemplate : function(str){
-        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, DEFAULT = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14;
+        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, DEFAULT = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14, USE = 15;
         var tokens = [];
         //lexer
         var token = "";
@@ -46,6 +47,7 @@ LWJSTE.prototype = {
                 case "case": push(CASE, token); break;
                 case "default": push(DEFAULT, token); break;
                 case "/switch": push(SWITCH_END, token); break;
+                case "use": push(USE, token); break;
                 default: push(ID, token);
             }
         }
@@ -349,6 +351,13 @@ LWJSTE.prototype = {
                                 node.push([LWJSTE.VARIABLE, in_cb[0][1]]);
                             }
                             break;
+                        case USE:
+                            if(in_cb.length != 3){
+                                return faild_token(tokens[progress]);
+                            }else{
+                                node.push([LWJSTE.USE, in_cb[1][1], in_cb[2][1]]);
+                            }
+                            break;
                         default:
                             return faild_token(tokens[progress]);
                     }
@@ -439,6 +448,9 @@ LWJSTE.prototype = {
                     if(do_default_process){
                         result += this._useTemplate(template[i][3], data);
                     }
+                    break;
+                case LWJSTE.USE:
+                    result += this.useTemplate(template[i][1], data[template[i][2]]);
                     break;
             }
         }
