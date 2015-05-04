@@ -337,7 +337,12 @@ LWJSTE.prototype = {
         return success(result);
     },
     addTemplate : function(name, template){
-        this.templates[name] = this._parseTemplate(template);
+        var result = this._parseTemplate(template);
+        if(result[0] == 0){
+            this.templates[name] = result[1];
+        }else{
+            //TODO error
+        }
     },
     _useTemplate : function(template, data){
         var result = "";
