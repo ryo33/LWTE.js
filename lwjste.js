@@ -368,7 +368,7 @@ LWJSTE.prototype = {
         }
     }
     useTemplate : function(name, data){
-        return this.useTemplate(this.templates[name], data);
+        return this._useTemplate(this.templates[name], data);
     },
     removeTemplate : function(name){
         if(name == null){
