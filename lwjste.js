@@ -386,6 +386,7 @@ LWJSTE.prototype = {
     _evaluateVariable : function(variable){
         if((variable === false) ||
                 (variable == null) ||
+                (variable instanceof Object && Object.keys(variable).length === 0) ||
                 (variable instanceof Array && variable.length == 0)){
             return false;
         }
