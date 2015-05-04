@@ -17,6 +17,8 @@ LWJSTE.prototype = {
         var literal = true;
         var last_is_escape = false;
         var pushed = false;
+        var in_quotation = false; //used in curly brackets
+        var used_quotation = null; //used with in_quotation
         function success(result){
             return [0, result];
         }
@@ -71,19 +73,41 @@ LWJSTE.prototype = {
                     }
                 }
             }else{
-                if(str[i] == "}"){
-                    if(token.length != 0){
-                        push_reserved_word(token);
+                if(last_is_escape){
+                    last_is_escape = false;
+                    if(str[i] == LWJSTE.escape_character){
+                        token += str[i];
+                    }else{
+                        token += LWJSTE.escape_character + str[i];
                     }
-                    push(R_CB, "}");
-                    pushed = false;
-                    literal = true;
-                }else if(str[i] == " "){
-                    if(token.length != 0){
-                        push_reserved_word(token);
+                }else if(in_quotation){
+                    if(str[i] == LWJSTE.escape_character){
+                        last_is_escape = true;
+                    }else if(str[i] == used_quotation){
+                        in_quotation = false;
+                    }else{
+                        token += str[i];
                     }
                 }else{
-                    token += str[i];
+                    if(str[i] == LWJSTE.escape_character){
+                        last_is_escape = true;
+                    }else if(str[i] == "}"){
+                        if(token.length != 0){
+                            push_reserved_word(token);
+                        }
+                        push(R_CB, "}");
+                        pushed = false;
+                        literal = true;
+                    }else if(str[i] == "\"" || str[i] == "'"){
+                        in_quotation = true;
+                        used_quotation = str[i];
+                    }else if(str[i] == " "){
+                        if(token.length != 0){
+                            push_reserved_word(token);
+                        }
+                    }else{
+                        token += str[i];
+                    }
                 }
             }
         }
