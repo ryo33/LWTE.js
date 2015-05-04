@@ -360,7 +360,7 @@ LWJSTE.prototype = {
     },
     _useTemplate : function(template, data){
         var result = "";
-        for(var i = 0, len = template.length; i < len; i ++){
+        for(var i = 0, leni = template.length; i < leni; i ++){
             switch(template[i][0]){
                 case LWJSTE.LITERAL:
                     result += template[i][1];
@@ -369,16 +369,16 @@ LWJSTE.prototype = {
                     result += String(data[template[i][1]]);
                     break;
                 case LWJSTE.EACH:
-                    for(var j = 0, len = data[template[i][1]].length; j < len; j ++){
+                    for(var j = 0, lenj = data[template[i][1]].length; j < lenj; j ++){
                         result += this._useTemplate(template[i][2], data[template[i][1]][j]);
                     }
                     break;
                 case LWJSTE.IF:
                     var do_else_process = true; //do else process if true
-                    for(var j = 0, len = template[i][1].length; j < len; j ++){
-                        var do_process = true; //do else process if true
+                    for(var j = 0, lenj = template[i][1].length; j < lenj; j ++){
+                        var do_process = true;
                         //AND
-                        for(var k = 0, len = template[i][1][j][0].length; k < len; k ++){
+                        for(var k = 0, lenk = template[i][1][j][0].length; k < lenk; k ++){
                             if(this._evaluateVariable(data[template[i][1][j][0][k]]) == false){
                                 do_process = false;
                                 break;
@@ -395,23 +395,25 @@ LWJSTE.prototype = {
                     }
                     break;
                 case LWJSTE.SWITCH:
-                    var do_default_process = true; //do else process if true
-                    for(var j = 0, len = template[i][1].length; j < len; j ++){
-                        var do_process = false; //do else process if true
+                    var do_default_process = true; //do default process if true
+                    for(var j = 0, lenj = template[i][2].length; j < lenj; j ++){
+                        var do_process = false;
                         //OR
-                        for(var k = 0, len = template[i][1][j][0].length; k < len; k ++){
-                            if(this._evaluateVariable(data[template[i][1][j][0][k]]) == true){
+                        for(var k = 0, lenk = template[i][2][j][0].length; k < lenk; k ++){
+                            console.log(data[template[i][1]]);
+                            console.log(template[i][2][j][0][k]);
+                            if(data[template[i][1]] == template[i][2][j][0][k]){
                                 do_process = true;
                                 break;
                             }
                         }
                         if(do_process){
-                            result += this._useTemplate(template[i][1][j][1], data);
+                            result += this._useTemplate(template[i][2][j][1], data);
                             do_default_process = false;
                         }
                     }
                     if(do_default_process){
-                        result += this._useTemplate(template[i][2], data);
+                        result += this._useTemplate(template[i][3], data);
                     }
                     break;
             }
