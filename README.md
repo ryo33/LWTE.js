@@ -33,7 +33,7 @@ Also you can save the compiled templates into such as cookie and Web Strage.
 ####How to write templates
 Briefly, just write "{VAR_NAME}".  
 But there are reserved keywords.  
-`if elif else /if each /each switch case default /switch use`  
+`if`, `elif`, `else`, `/if`, `each`, `/each`, `switch`, `case`, `default`, `/switch`, `use`  
 You can't use them as variable name even if they contain capital letters.  
 - {if VAR_NAME ...}{elif VAR_NAME ...}{else}{/if}  
 You can use this just like general if-elif-else-statement.  
