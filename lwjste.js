@@ -107,6 +107,7 @@ LWJSTE.prototype = {
         var each_opens = 0; //used when in each blocks
         var switch_opens = 0, case_used = [], default_used = []; //used when in switch blocks
         var unexpected_tokens = [ELIF, ELSE, CASE, DEFAULT, EACH_END, IF_END, SWITCH_END];
+        var literal_skip = false; //not push literal if this was true
         function drop(array, index){
             array.splice(index, 1);
         }
@@ -174,7 +175,9 @@ LWJSTE.prototype = {
             if(! cb_open){
                 switch(tokens[progress][0]){
                     case LITERAL:
-                        node.push([LWJSTE.LITERAL, tokens[progress][1]]);
+                        if(! literal_skip){
+                            node.push([LWJSTE.LITERAL, tokens[progress][1]]);
+                        }
                         break;
                     case L_CB:
                         cb_open = true;
@@ -265,7 +268,8 @@ LWJSTE.prototype = {
                                 move_node_child();
                                 move_node_child(2);
                                 remove_unexpected_token([CASE, DEFAULT, SWITCH_END]);
-                                set_unexpected_token([EACH, IF, LITERAL, SWITCH]);
+                                set_unexpected_token([EACH, IF, SWITCH]);
+                                literal_skip = true;
                             }
                             break;
                         case CASE:
@@ -273,14 +277,15 @@ LWJSTE.prototype = {
                                 return faild_token(tokens[progress]);
                             }else{
                                 if(case_used[switch_opens]){
-                                    parent_nodes(2);
+                                    move_node_parent(2);
                                     get_current_node();
                                 }
                                 node.push([format_statement(), []]);
                                 move_node_child();
                                 move_node_child(1);
                                 case_used[switch_opens] = true;
-                                remove_unexpected_token([EACH, IF, LITERAL, SWITCH]);
+                                remove_unexpected_token([EACH, IF, SWITCH]);
+                                literal_skip = false;
                             }
                             break;
                         case DEFAULT:
@@ -295,7 +300,8 @@ LWJSTE.prototype = {
                                 }
                                 move_node_child(3);
                                 set_unexpected_token(CASE);
-                                remove_unexpected_token([EACH, IF, LITERAL, SWITCH]);
+                                remove_unexpected_token([EACH, IF, SWITCH]);
+                                literal_skip = false;
                             }
                             break;
                         case SWITCH_END:
@@ -309,6 +315,7 @@ LWJSTE.prototype = {
                                 }
                                 switch_opens --;
                                 set_unexpected_token([CASE, DEFAULT, SWITCH_END]);
+                                literal_skip = false;
                             }
                             break;
                         case ID:
