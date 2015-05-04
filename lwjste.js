@@ -366,7 +366,7 @@ LWJSTE.prototype = {
                     break;
             }
         }
-    }
+    },
     useTemplate : function(name, data){
         return this._useTemplate(this.templates[name], data);
     },
