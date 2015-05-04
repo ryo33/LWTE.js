@@ -203,7 +203,6 @@ LWJSTE.prototype = {
                             if(if_opens == 0 || in_cb.length == 1 || else_used[if_opens]){
                                 return faild_token(tokens[progress]);
                             }else{
-                                drop(in_cb, 0);
                                 move_node_parent(2);
                                 get_current_node();
                                 node.push([format_statement(), []]);
@@ -344,28 +343,73 @@ LWJSTE.prototype = {
             //TODO error
         }
     },
+    _evaluateVariable : function(variable){
+        if((variable === false) ||
+                (variable == null) ||
+                (variable instanceof Array && variable.length == 0)){
+            return false;
+        }
+        return true;
+    },
     _useTemplate : function(template, data){
         var result = "";
-        var template = this.templates[name];
         for(var i = 0, len = template.length; i < len; i ++){
             switch(template[i][0]){
-                case this.LITERAL:
+                case LWJSTE.LITERAL:
                     result += template[i][1];
                     break;
-                case this.VARIABLE:
-                    result += data[template[i][1]];
+                case LWJSTE.VARIABLE:
+                    result += String(data[template[i][1]]);
                     break;
-                case this.EACH:
+                case LWJSTE.EACH:
                     for(var j = 0, len = data[template[i][1]].length; j < len; j ++){
-                        result += this._useTemplate(template[i][2], data[template[i][1][j]]);
+                        result += this._useTemplate(template[i][2], data[template[i][1]][j]);
                     }
                     break;
-                case this.IF:
+                case LWJSTE.IF:
+                    var do_else_process = true; //do else process if true
+                    for(var j = 0, len = template[i][1].length; j < len; j ++){
+                        var do_process = true; //do else process if true
+                        //AND
+                        for(var k = 0, len = template[i][1][j][0].length; k < len; k ++){
+                            if(this._evaluateVariable(data[template[i][1][j][0][k]]) == false){
+                                do_process = false;
+                                break;
+                            }
+                        }
+                        if(do_process){
+                            result += this._useTemplate(template[i][1][j][1], data);
+                            do_else_process = false;
+                            break;
+                        }
+                    }
+                    if(do_else_process){
+                        result += this._useTemplate(template[i][2], data);
+                    }
                     break;
-                case this.SWITCH:
+                case LWJSTE.SWITCH:
+                    var do_default_process = true; //do else process if true
+                    for(var j = 0, len = template[i][1].length; j < len; j ++){
+                        var do_process = false; //do else process if true
+                        //OR
+                        for(var k = 0, len = template[i][1][j][0].length; k < len; k ++){
+                            if(this._evaluateVariable(data[template[i][1][j][0][k]]) == true){
+                                do_process = true;
+                                break;
+                            }
+                        }
+                        if(do_process){
+                            result += this._useTemplate(template[i][1][j][1], data);
+                            do_default_process = false;
+                        }
+                    }
+                    if(do_default_process){
+                        result += this._useTemplate(template[i][2], data);
+                    }
                     break;
             }
         }
+        return result;
     },
     useTemplate : function(name, data){
         return this._useTemplate(this.templates[name], data);
