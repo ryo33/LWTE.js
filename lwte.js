@@ -1,4 +1,4 @@
-function LWJSTE(){
+function LWTE(){
     this.templates = {};
     arguments.callee.escape_character = "#";
     arguments.callee.IF = 0;
@@ -9,7 +9,7 @@ function LWJSTE(){
     arguments.callee.USE = 5;
     arguments.callee.HTML = 6;
 }
-LWJSTE.prototype = {
+LWTE.prototype = {
     _parseTemplate : function(str){
         var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, DEFAULT = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14, USE = 15, HTML = 16;
         var tokens = [];
@@ -60,13 +60,13 @@ LWJSTE.prototype = {
             if(literal){
                 if(last_is_escape){
                     last_is_escape = false;
-                    if(str[i] == LWJSTE.escape_character){
-                        token += LWJSTE.escape_character;
+                    if(str[i] == LWTE.escape_character){
+                        token += LWTE.escape_character;
                     }else{
-                        token += LWJSTE.escape_character + str[i];
+                        token += LWTE.escape_character + str[i];
                     }
                 }else{
-                    if(str[i] == LWJSTE.escape_character){
+                    if(str[i] == LWTE.escape_character){
                         last_is_escape = true;
                     }else if(str[i] == "{"){
                         push(LITERAL, token);
@@ -79,13 +79,13 @@ LWJSTE.prototype = {
             }else{
                 if(last_is_escape){
                     last_is_escape = false;
-                    if(str[i] == LWJSTE.escape_character){
+                    if(str[i] == LWTE.escape_character){
                         token += str[i];
                     }else{
-                        token += LWJSTE.escape_character + str[i];
+                        token += LWTE.escape_character + str[i];
                     }
                 }else if(in_quotation){
-                    if(str[i] == LWJSTE.escape_character){
+                    if(str[i] == LWTE.escape_character){
                         last_is_escape = true;
                     }else if(str[i] == used_quotation){
                         in_quotation = false;
@@ -93,7 +93,7 @@ LWJSTE.prototype = {
                         token += str[i];
                     }
                 }else{
-                    if(str[i] == LWJSTE.escape_character){
+                    if(str[i] == LWTE.escape_character){
                         last_is_escape = true;
                     }else if(str[i] == "}"){
                         if(token.length != 0){
@@ -204,7 +204,7 @@ LWJSTE.prototype = {
                 switch(tokens[progress][0]){
                     case LITERAL:
                         if(! literal_skip){
-                            node.push([LWJSTE.LITERAL, tokens[progress][1]]);
+                            node.push([LWTE.LITERAL, tokens[progress][1]]);
                         }
                         break;
                     case L_CB:
@@ -222,7 +222,7 @@ LWJSTE.prototype = {
                             }else{
                                 if_opens ++;
                                 else_used.push(false);
-                                node.push([LWJSTE.IF, [[format_statement(), []]], []]);
+                                node.push([LWTE.IF, [[format_statement(), []]], []]);
                                 move_node_child();
                                 move_node_child(1);
                                 move_node_child(0);
@@ -270,7 +270,7 @@ LWJSTE.prototype = {
                                 return faild_token(tokens[progress]);
                             }else{
                                 each_opens ++;
-                                node.push([LWJSTE.EACH, in_cb[1][1], []]);
+                                node.push([LWTE.EACH, in_cb[1][1], []]);
                                 move_node_child();
                                 move_node_child(2);
                                 remove_unexpected_token(EACH_END);
@@ -292,7 +292,7 @@ LWJSTE.prototype = {
                                 switch_opens ++;
                                 case_used.push(false);
                                 default_used.push(false);
-                                node.push([LWJSTE.SWITCH, in_cb[1][1], [], []]);
+                                node.push([LWTE.SWITCH, in_cb[1][1], [], []]);
                                 move_node_child();
                                 move_node_child(2);
                                 remove_unexpected_token([CASE, DEFAULT, SWITCH_END]);
@@ -350,21 +350,21 @@ LWJSTE.prototype = {
                             if(in_cb.length != 1){
                                 return faild_token(tokens[progress]);
                             }else{
-                                node.push([LWJSTE.VARIABLE, in_cb[0][1]]);
+                                node.push([LWTE.VARIABLE, in_cb[0][1]]);
                             }
                             break;
                         case USE:
                             if(in_cb.length != 3){
                                 return faild_token(tokens[progress]);
                             }else{
-                                node.push([LWJSTE.USE, in_cb[1][1], in_cb[2][1]]);
+                                node.push([LWTE.USE, in_cb[1][1], in_cb[2][1]]);
                             }
                             break;
                         case HTML:
                             if(in_cb.length != 2){
                                 return faild_token(tokens[progress]);
                             }else{
-                                node.push([LWJSTE.HTML, in_cb[1][1]]);
+                                node.push([LWTE.HTML, in_cb[1][1]]);
                             }
                             break;
                         default:
@@ -413,21 +413,21 @@ LWJSTE.prototype = {
         var result = "";
         for(var i = 0, leni = template.length; i < leni; i ++){
             switch(template[i][0]){
-                case LWJSTE.LITERAL:
+                case LWTE.LITERAL:
                     result += template[i][1];
                     break;
-                case LWJSTE.VARIABLE:
+                case LWTE.VARIABLE:
                     result += this._escapeHtml(String(data[template[i][1]]));
                     break;
-                case LWJSTE.HTML:
+                case LWTE.HTML:
                     result += String(data[template[i][1]]);
                     break;
-                case LWJSTE.EACH:
+                case LWTE.EACH:
                     for(var j = 0, lenj = data[template[i][1]].length; j < lenj; j ++){
                         result += this._useTemplate(template[i][2], data[template[i][1]][j]);
                     }
                     break;
-                case LWJSTE.IF:
+                case LWTE.IF:
                     var do_else_process = true; //do else process if true
                     for(var j = 0, lenj = template[i][1].length; j < lenj; j ++){
                         var do_process = true;
@@ -448,7 +448,7 @@ LWJSTE.prototype = {
                         result += this._useTemplate(template[i][2], data);
                     }
                     break;
-                case LWJSTE.SWITCH:
+                case LWTE.SWITCH:
                     var do_default_process = true; //do default process if true
                     for(var j = 0, lenj = template[i][2].length; j < lenj; j ++){
                         var do_process = false;
@@ -470,7 +470,7 @@ LWJSTE.prototype = {
                         result += this._useTemplate(template[i][3], data);
                     }
                     break;
-                case LWJSTE.USE:
+                case LWTE.USE:
                     result += this.useTemplate(template[i][1], data[template[i][2]]);
                     break;
             }
@@ -492,4 +492,4 @@ LWJSTE.prototype = {
     loadTemplates : function(source){
     }
 };
-lwjste = new LWJSTE();
+lwte = new LWTE();
