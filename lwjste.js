@@ -7,10 +7,11 @@ function LWJSTE(){
     arguments.callee.LITERAL = 3;
     arguments.callee.VARIABLE = 4;
     arguments.callee.USE = 5;
+    arguments.callee.HTML = 6;
 }
 LWJSTE.prototype = {
     _parseTemplate : function(str){
-        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, DEFAULT = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14, USE = 15;
+        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, DEFAULT = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14, USE = 15, HTML = 16;
         var tokens = [];
         //lexer
         var token = "";
@@ -48,6 +49,7 @@ LWJSTE.prototype = {
                 case "default": push(DEFAULT, token); break;
                 case "/switch": push(SWITCH_END, token); break;
                 case "use": push(USE, token); break;
+                case "html": push(HTML, token); break;
                 default: push(ID, token);
             }
         }
@@ -358,6 +360,13 @@ LWJSTE.prototype = {
                                 node.push([LWJSTE.USE, in_cb[1][1], in_cb[2][1]]);
                             }
                             break;
+                        case HTML:
+                            if(in_cb.length != 2){
+                                return faild_token(tokens[progress]);
+                            }else{
+                                node.push([LWJSTE.HTML, in_cb[1][1]]);
+                            }
+                            break;
                         default:
                             return faild_token(tokens[progress]);
                     }
@@ -409,6 +418,9 @@ LWJSTE.prototype = {
                     break;
                 case LWJSTE.VARIABLE:
                     result += this._escapeHtml(String(data[template[i][1]]));
+                    break;
+                case LWJSTE.HTML:
+                    result += String(data[template[i][1]]);
                     break;
                 case LWJSTE.EACH:
                     for(var j = 0, lenj = data[template[i][1]].length; j < lenj; j ++){
