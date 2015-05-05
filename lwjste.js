@@ -392,6 +392,14 @@ LWJSTE.prototype = {
         }
         return true;
     },
+    _escapeHtml : function(text){
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    },
     _useTemplate : function(template, data){
         var result = "";
         for(var i = 0, leni = template.length; i < leni; i ++){
@@ -400,7 +408,7 @@ LWJSTE.prototype = {
                     result += template[i][1];
                     break;
                 case LWJSTE.VARIABLE:
-                    result += String(data[template[i][1]]);
+                    result += this._escapeHtml(String(data[template[i][1]]));
                     break;
                 case LWJSTE.EACH:
                     for(var j = 0, lenj = data[template[i][1]].length; j < lenj; j ++){
