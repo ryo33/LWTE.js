@@ -36,20 +36,20 @@ But there are 11 reserved keywords.
 `if`, `elif`, `else`, `/if`, `each`, `/each`, `switch`, `case`, `default`, `/switch`, `use`  
 You can't use them as variable name even if they contain capital letters.  
 #####Syntax
-- {VAR_NAME}  
+- `{VAR_NAME}`  
 LWJSTE replace this with doing html escape.
-- {if VAR_NAME ...}{elif VAR_NAME ...}{else}{/if}  
+- `{if VAR_NAME ...}{elif VAR_NAME ...}{else}{/if}`  
 You can use this just like general if-elif-else-statement.  
 Controlling expressions will be treated as true if all variables are evaluated as true.  
-- {each VAR_NAME}{/each}  
+- `{each VAR_NAME}{/each}`  
 You can use this just like general foreach-statement.  
-- {switch}{case VAR_NAME ...}{default}{/switch}  
+- `{switch}{case VAR_NAME ...}{default}{/switch}`  
 You can use this just like general switch-statement.  
 But LWJSTE's switch-statement doesn't do fall through.  
 Case-statements will be executed if there are one or more variables are evaluated as true.  
-- {use TEMPLATE_NAME VAR_NAME}  
+- `{use TEMPLATE_NAME VAR_NAME}`  
 You can use this just like `lwjste.useTemplate(TEMPLATE_NAME, VAR_NAME)`.  
-- {html VAR_NAME}  
+- `{html VAR_NAME}`  
 You can use this just like {VAR_NAME}.  
 But this will **not do html escape**.  
 
