@@ -23,7 +23,7 @@ var result = lwjste.useTemplate("template_name",
       ]
     }
   );
-//result -> "<p>It's an example.</p><p>c: 1</p><p>c: 2</p><p>c: 3</p>"
+//result -> "<p>It%#039;s an example.</p><p>c: 1</p><p>c: 2</p><p>c: 3</p>"
 ```
 That's almost all!  
 So, just do ...  
@@ -35,6 +35,9 @@ Briefly, just write "{VAR_NAME}".
 But there are 11 reserved keywords.  
 `if`, `elif`, `else`, `/if`, `each`, `/each`, `switch`, `case`, `default`, `/switch`, `use`  
 You can't use them as variable name even if they contain capital letters.  
+#####Syntax
+- {VAR_NAME}  
+LWJSTE replace this with doing html escape.
 - {if VAR_NAME ...}{elif VAR_NAME ...}{else}{/if}  
 You can use this just like general if-elif-else-statement.  
 Controlling expressions will be treated as true if all variables are evaluated as true.  
@@ -46,6 +49,13 @@ But LWJSTE's switch-statement doesn't do fall through.
 Case-statements will be executed if there are one or more variables are evaluated as true.  
 - {use TEMPLATE_NAME VAR_NAME}  
 You can use this just like `lwjste.useTemplate(TEMPLATE_NAME, VAR_NAME)`.  
+- {html VAR_NAME}  
+You can use this just like {VAR_NAME}.  
+But this will **not do html escape**.  
+
+#####evaluating variable  
+false : `false`, `undefined`, `null`, `[]`, and `{}`  
+true : all other  
 
 ###Requirement
 This is a stand-alone JavaScript library.
