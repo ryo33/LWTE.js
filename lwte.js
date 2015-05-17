@@ -137,35 +137,58 @@ LWTE.prototype = {
         var if_opens = 0, else_used = []; //used when in if blocks
         var each_opens = 0; //used when in each blocks
         var switch_opens = 0, case_used = [], default_used = []; //used when in switch blocks
-        var unexpected_tokens = [ELIF, ELSE, CASE, DEFAULT, EACH_END, IF_END, SWITCH_END];
+        var unexpected_tokens_default = [ELIF, ELSE, CASE, DEFAULT, EACH_END, IF_END, SWITCH_END];
+        var unexpected_tokens = [unexpected_tokens_default];
         var literal_skip = false; //not push literal if this was true
         function drop(array, index){
             array.splice(index, 1);
         }
+        function get_opens(){
+            return if_opens + each_opens + switch_opens;
+        }
+        function update_unexpected_tokens(){
+            var opens = get_opens();
+            if(opens < unexpected_tokens.length - 1){
+                drop(unexpected_tokens, unexpected_tokens.length - 1);
+            }else if(opens > unexpected_tokens.length - 1){
+                for(var i = 0, len = opens - unexpected_tokens.length + 1; i < len; i ++){
+                    unexpected_tokens.push(unexpected_tokens_default);
+                }
+            }
+        }
         function set_unexpected_token(token){
+            update_unexpected_tokens();
             if(token instanceof Array){
                 for(var i = 0, len = token.length; i < len; i ++){
                     set_unexpected_token(token[i]);
                 }
             }else{
-                if(unexpected_tokens.indexOf(token) == -1){
-                    unexpected_tokens.push(token);
+                if(unexpected_tokens[get_opens()].indexOf(token) == -1){
+                    unexpected_tokens[get_opens()].push(token);
                 }
             }
         }
         function remove_unexpected_token(token){
+            update_unexpected_tokens();
             if(token instanceof Array){
                 for(var i = 0, len = token.length; i < len; i ++){
                     remove_unexpected_token(token[i]);
                 }
             }else{
-                for(var i = 0, len = unexpected_tokens.length; i < len; i ++){
-                    if(token == unexpected_tokens[i]){
-                        drop(unexpected_tokens, i);
+                for(var i = 0, len = unexpected_tokens[get_opens()].length; i < len; i ++){
+                    if(token == unexpected_tokens[get_opens()][i]){
+                        drop(unexpected_tokens[get_opens()], i);
                         break;
                     }
                 }
             }
+        }
+        function check_unexpected_token(){
+            update_unexpected_tokens();
+            if(unexpected_tokens[get_opens()].indexOf(tokens[progress][0]) != -1){
+                return true;
+            }
+            return false;
         }
         function move_node_parent(count){
             drop(indexes, indexes.length - 1);
@@ -199,7 +222,7 @@ LWTE.prototype = {
             return result;
         }
         while(progress < token_length){
-            if(unexpected_tokens.indexOf(tokens[progress][0]) != -1){
+            if(check_unexpected_token()){
                 return faild_token(tokens[progress], "unexpected token");
             }
             get_current_node();
@@ -265,7 +288,6 @@ LWTE.prototype = {
                                     move_node_parent(4);
                                 }
                                 if_opens --;
-                                set_unexpected_token([ELIF, ELSE, IF_END]);
                             }
                             break;
                         case EACH:
@@ -285,7 +307,6 @@ LWTE.prototype = {
                             }else{
                                 move_node_parent(2);
                                 each_opens --;
-                                set_unexpected_token(EACH_END);
                             }
                             break;
                         case SWITCH:
@@ -345,7 +366,6 @@ LWTE.prototype = {
                                     move_node_parent(4);
                                 }
                                 switch_opens --;
-                                set_unexpected_token([CASE, DEFAULT, SWITCH_END]);
                                 literal_skip = false;
                             }
                             break;
