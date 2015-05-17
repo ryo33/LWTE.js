@@ -492,4 +492,3 @@ LWTE.prototype = {
     loadTemplates : function(source){
     }
 };
-lwte = new LWTE();
