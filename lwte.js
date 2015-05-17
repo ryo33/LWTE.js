@@ -1,16 +1,27 @@
-function LWTE(){
-    this.templates = {};
-    arguments.callee.escape_character = "#";
-    arguments.callee.IF = 0;
-    arguments.callee.EACH = 1;
-    arguments.callee.SWITCH = 2;
-    arguments.callee.LITERAL = 3;
-    arguments.callee.VARIABLE = 4;
-    arguments.callee.USE = 5;
-    arguments.callee.HTML = 6;
-}
-LWTE.prototype = {
-    _parseTemplate : function(str){
+(function(global){
+    "use strict;"
+
+    function LWTE(){
+        this.templates = {};
+        arguments.callee.escape_character = "#";
+        arguments.callee.IF = 0;
+        arguments.callee.EACH = 1;
+        arguments.callee.SWITCH = 2;
+        arguments.callee.LITERAL = 3;
+        arguments.callee.VARIABLE = 4;
+        arguments.callee.USE = 5;
+        arguments.callee.HTML = 6;
+    }
+    LWTE.prototype['useTemplate'] = useTemplate; //("TEMPLATE_NAME", DATA)
+    LWTE.prototype['addTemplate'] = addTemplate; //("TEMPLATE_NAME", "TEMPLATE")
+    LWTE.prototype['removeTemplate'] = removeTemplate; //() or ("TEMPLATE_NAME")
+    LWTE.prototype['saveTemplates'] = saveTemplates; //not implemented
+    LWTE.prototype['loadTemplates'] = loadTemplates; //not implemented
+    LWTE.prototype['_parseTemplate'] = _parseTemplate;
+    LWTE.prototype['_useTemplate'] = _useTemplate;
+    LWTE.prototype['_evaluateVariable'] = _evaluateVariable;
+    LWTE.prototype['_escapeHtml'] = _escapeHtml;
+    function _parseTemplate(str){
         var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, DEFAULT = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14, USE = 15, HTML = 16;
         var tokens = [];
         //lexer
@@ -406,8 +417,8 @@ LWTE.prototype = {
             return faild_message("found not closed" + if_c + each_c + switch_c);
         }
         return success(result);
-    },
-    addTemplate : function(name, template){
+    }
+    function addTemplate(name, template){
         var result = this._parseTemplate(template);
         if(result[0] == 0){
             this.templates[name] = result[1];
@@ -415,8 +426,8 @@ LWTE.prototype = {
         }else{
             return result.slice(1);
         }
-    },
-    _evaluateVariable : function(variable){
+    }
+    function _evaluateVariable(variable){
         if((variable === false) ||
                 (variable == null) ||
                 (variable instanceof Object && Object.keys(variable).length === 0) ||
@@ -424,16 +435,16 @@ LWTE.prototype = {
             return false;
         }
         return true;
-    },
-    _escapeHtml : function(text){
+    }
+    function _escapeHtml(text){
         return text
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
-    },
-    _useTemplate : function(template, data){
+    }
+    function _useTemplate(template, data){
         var result = "";
         for(var i = 0, leni = template.length; i < leni; i ++){
             switch(template[i][0]){
@@ -500,19 +511,24 @@ LWTE.prototype = {
             }
         }
         return result;
-    },
-    useTemplate : function(name, data){
+    }
+    function useTemplate(name, data){
         return this._useTemplate(this.templates[name], data);
-    },
-    removeTemplate : function(name){
+    }
+    function removeTemplate(name){
         if(name == null){
             this.templates = {};
         }else if(name in this.templates){
             delete this.templates[name];
         }
-    },
-    saveTemplates : function(destination){
-    },
-    loadTemplates : function(source){
     }
-};
+    function saveTemplates(destination){
+    }
+    function loadTemplates(source){
+    }
+    
+    if("process" in global){
+        module.exports = LWTE;
+    }
+    global['LWTE'] = LWTE;
+})((this || 0).self || global);
