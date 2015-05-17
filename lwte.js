@@ -388,8 +388,9 @@ LWTE.prototype = {
         var result = this._parseTemplate(template);
         if(result[0] == 0){
             this.templates[name] = result[1];
+            return false;
         }else{
-            //TODO error
+            return result[1];
         }
     },
     _evaluateVariable : function(variable){
