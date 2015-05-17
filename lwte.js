@@ -16,6 +16,7 @@ LWTE.prototype = {
         //lexer
         var token = "";
         var lines_count = 1;
+        var characters_count = 0;
         var literal = true;
         var last_is_escape = false;
         var pushed = false;
@@ -25,14 +26,14 @@ LWTE.prototype = {
             return [0, result];
         }
         function faild_token(token, message){
-            return [1, message == undefined ? "" : message, [token[2], token[1]]];
+            return [1, message == undefined ? "" : message, token[2], token[3], token[1]];
         }
         function faild_message(message){
             return [1, message, []];
         }
         function push(type, lexeme){
             if(lexeme.length != 0){
-                tokens.push([type, lexeme, lines_count]);
+                tokens.push([type, lexeme, lines_count, characters_count]);
                 token = "";
             }
         }
@@ -56,7 +57,9 @@ LWTE.prototype = {
         for(var i = 0, len = str.length; i < len; i ++){
             if(str[i] == "\n"){
                 lines_count ++;
+                characters_count = 0;
             }
+            characters_count ++;
             if(literal){
                 if(last_is_escape){
                     last_is_escape = false;
@@ -390,7 +393,7 @@ LWTE.prototype = {
             this.templates[name] = result[1];
             return false;
         }else{
-            return result[1];
+            return result.slice(1);
         }
     },
     _evaluateVariable : function(variable){
