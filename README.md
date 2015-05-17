@@ -2,33 +2,60 @@
 This is the Light Weight Template Engine for JavaScript.
 ###Description
 #####Example
+Template:  
+```html
+<p>{text}</p>
+{if table}
+<table>
+    {if table-head}
+    <thead>
+    <tr>
+        {each table-head}
+            <th>{name}</th>
+        {/each}
+    </tr>
+    </thead>
+    {/if}
+    <tbody>
+    {each table-body}
+        <tr>
+        {each datas}
+            <td>{data}</td>
+        {/each}
+        </tr>
+    {/each}
+    </tbody>
+</table>
+{/if}
+```
+Data:
 ```javascript
-lwte.addTemplate("template_name",
-    "<p>{a}</p>" +
-    "{each b}" +
-    "{if c}" +
-    "<p>c: {c}</p>" +
-    "{/if}" +
-    "{/each}"
-  );
-var result = lwte.useTemplate("template_name",
-    {
-      a: "It's an example.",
-      b: [
-        {c: "1"},
-        {c: "2"},
-        {d: "!"},
-        {c: "3"}
-      ]
-    }
-  );
-//result -> "<p>It%#039;s an example.</p><p>c: 1</p><p>c: 2</p><p>c: 3</p>"
+{
+    "text" : "This is an example.",
+    "table" : true,
+    "table-body" : [
+        {datas : [{data: "1"}, {data: "2"}]},
+        {datas : [{data: "3"}, {data: "4"}]}
+    ]
+}
+```
+Result:
+```html
+<p>This is an example.</p>
+<table>
+    <tbody>
+        <tr>                    
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>4</td>
+        </tr>
+    </tbody>
+</table>
 ```
 That's almost all!  
-So, just do ...  
-1. Call `lwte.addTemplate(TEMPLATE_NAME, TEMPLATE)` to add and compile the template.  
-2. Call `lwte.useTemplate(TEMPLATE_NAME, DATA)` to use template.  
-Also you can save the compiled templates into such as cookie and Web Strage.
 ####How to write templates
 Briefly, just write `{VAR_NAME}`.  
 But there are 11 reserved keywords.  
@@ -59,7 +86,13 @@ true : all other
 ###Requirement
 This is a stand-alone JavaScript library.
 ###Usage
-Clone this repository and load `lwte.js`.
+Clone this repository and load `lwte.js`.  
+```javascript
+var lwte = new LWTE(); //create LWTE instance
+lwte.addTemplate("TEMPLATE_NAME", "TEMPLATE"); //add templates
+var result = lwte.useTemplate("TEMPLATE_NAME", DATA); //use templates
+//also you can save compiled templates
+```
 ###License
   [License](LICENSE)
 ###Author
