@@ -528,7 +528,7 @@
     function loadTemplates(source){
         this.templates = localStorage.getItem(source);
     }
-    
+
     if("process" in global){
         module.exports = LWTE;
     }
