@@ -86,7 +86,9 @@ true : all other
 ###Requirement  
 This is a stand-alone JavaScript library.
 ###Usage  
-Clone this repository and load `lwte.js`.  
+Do `npm install lwte` or  
+clone this repository.  
+And require `lwte.js`.    
 ```javascript
 var lwte = new LWTE(); //create LWTE instance
 lwte.addTemplate("TEMPLATE_NAME", "TEMPLATE"); //add templates
