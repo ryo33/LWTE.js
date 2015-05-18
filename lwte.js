@@ -15,8 +15,8 @@
     LWTE.prototype['useTemplate'] = useTemplate; //("TEMPLATE_NAME", DATA)
     LWTE.prototype['addTemplate'] = addTemplate; //("TEMPLATE_NAME", "TEMPLATE")
     LWTE.prototype['removeTemplate'] = removeTemplate; //() or ("TEMPLATE_NAME")
-    LWTE.prototype['saveTemplates'] = saveTemplates; //not implemented
-    LWTE.prototype['loadTemplates'] = loadTemplates; //not implemented
+    LWTE.prototype['saveTemplates'] = saveTemplates; //("destination")
+    LWTE.prototype['loadTemplates'] = loadTemplates; //("source")
     LWTE.prototype['_parseTemplate'] = _parseTemplate;
     LWTE.prototype['_useTemplate'] = _useTemplate;
     LWTE.prototype['_evaluateVariable'] = _evaluateVariable;
@@ -523,8 +523,10 @@
         }
     }
     function saveTemplates(destination){
+        localStorage.setItem(destination, templates);
     }
     function loadTemplates(source){
+        this.templates = localStorage.getItem(source);
     }
     
     if("process" in global){
