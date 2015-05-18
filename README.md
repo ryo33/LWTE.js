@@ -1,7 +1,7 @@
 # LWTE.js
-This is the Light Weight Template Engine for JavaScript.
-###Description
-#####Example
+This is the Light Weight Template Engine for JavaScript.  
+###Description  
+#####Example  
 Template:  
 ```html
 <p>{text}</p>
@@ -56,12 +56,12 @@ Result:
 </table>
 ```
 That's almost all!  
-####How to write templates
+####How to write templates  
 Briefly, just write `{VAR_NAME}`.  
 But there are 11 reserved keywords.  
 `if`, `elif`, `else`, `/if`, `each`, `/each`, `switch`, `case`, `default`, `/switch`, `use`, `html`  
 You can't use them as variable name even if they contain capital letters.  
-#####Syntax
+#####Syntax  
 - `{VAR_NAME}`  
 LWTE.js replace this with doing html escape.
 - `{if VAR_NAME ...}{elif VAR_NAME ...}{else}{/if}`  
@@ -83,9 +83,9 @@ But this will **not do html escape**.
 false : `false`, `undefined`, `null`, `[]`, and `{}`  
 true : all other  
 
-###Requirement
+###Requirement  
 This is a stand-alone JavaScript library.
-###Usage
+###Usage  
 Clone this repository and load `lwte.js`.  
 ```javascript
 var lwte = new LWTE(); //create LWTE instance
@@ -93,7 +93,7 @@ lwte.addTemplate("TEMPLATE_NAME", "TEMPLATE"); //add templates
 var result = lwte.useTemplate("TEMPLATE_NAME", DATA); //use templates
 //also you can save compiled templates
 ```
-###License
+###License  
   [License](LICENSE)
-###Author
+###Author  
   [ryo33](https://github.com/ryo33/ "ryo33's github page")
