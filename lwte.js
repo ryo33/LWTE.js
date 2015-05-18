@@ -74,8 +74,8 @@
             if(literal){
                 if(last_is_escape){
                     last_is_escape = false;
-                    if(str[i] == LWTE.escape_character){
-                        token += LWTE.escape_character;
+                    if(str[i] == LWTE.escape_character || str[i] == '{' || str[i] == '}'){
+                        token += str[i];
                     }else{
                         token += LWTE.escape_character + str[i];
                     }
