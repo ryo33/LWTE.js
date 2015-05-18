@@ -489,8 +489,6 @@
                         var do_process = false;
                         //OR
                         for(var k = 0, lenk = template[i][2][j][0].length; k < lenk; k ++){
-                            console.log(data[template[i][1]]);
-                            console.log(template[i][2][j][0][k]);
                             if(data[template[i][1]] == template[i][2][j][0][k]){
                                 do_process = true;
                                 break;
