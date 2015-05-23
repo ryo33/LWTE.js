@@ -1,0 +1,26 @@
+{
+  "name": "lwte.js",
+  "main": "lwte.min.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/ryo33/LWTE.js",
+  "authors": [
+    "ryo33 <ryo33@mail.com>"
+  ],
+  "description": "This is a simple, fast, lightweight template engine.",
+  "keywords": [
+    "simple",
+    "fast",
+    "lightweight",
+    "template",
+    "engine",
+    "lwte"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

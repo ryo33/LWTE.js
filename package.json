@@ -1,0 +1,27 @@
+{
+  "name": "lwte",
+  "version": "0.1.0",
+  "description": "This is a simple, fast, lightweight template engine.",
+  "main": "lwte.min.js",
+  "scripts": {
+    "test":  "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryo33/LWTE.js.git"
+  },
+  "keywords": [
+    "simple",
+    "fast",
+    "lightweight",
+    "template",
+    "engine",
+    "lwte"
+  ],
+  "author": "ryo33",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ryo33/LWTE.js/issues"
+  },
+  "homepage": "https://github.com/ryo33/LWTE.js"
+}
