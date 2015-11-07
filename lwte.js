@@ -11,6 +11,8 @@
         arguments.callee.VARIABLE = 4;
         arguments.callee.USE = 5;
         arguments.callee.HTML = 6;
+        arguments.callee.DIRECT = 7;
+        arguments.callee.DIRECT_HTML = 8;
     }
     LWTE.prototype['useTemplate'] = useTemplate; //("TEMPLATE_NAME", DATA)
     LWTE.prototype['addTemplate'] = addTemplate; //("TEMPLATE_NAME", "TEMPLATE")
@@ -252,6 +254,9 @@
             }else{
                 if(tokens[progress][0] == R_CB){
                     cb_open = false;
+                    if(in_cb.length == 0){
+                        in_cb.push([DIRECT]);
+                    }
                     switch(in_cb[0][0]){
                         case IF:
                             if(in_cb.length == 1){
@@ -387,6 +392,9 @@
                                 node.push([LWTE.VARIABLE, in_cb[0][1]]);
                             }
                             break;
+                        case DIRECT:
+                            node.push([LWTE.DIRECT]);
+                            break;
                         case USE:
                             if(in_cb.length != 3){
                                 return faild_token(tokens[progress]);
@@ -395,10 +403,12 @@
                             }
                             break;
                         case HTML:
-                            if(in_cb.length != 2){
-                                return faild_token(tokens[progress]);
-                            }else{
+                            if(in_cb.length == 2){
                                 node.push([LWTE.HTML, in_cb[1][1]]);
+                            }else if(in_cb.length == 1){
+                                node.push([LWTE.DIRECT_HTML]);
+                            }else{
+                                return faild_token(tokens[progress]);
                             }
                             break;
                         default:
@@ -456,6 +466,12 @@
                     break;
                 case LWTE.HTML:
                     result += String(data[template[i][1]]);
+                    break;
+                case LWTE.DIRECT:
+                    result += this._escapeHtml(String(data));
+                    break;
+                case LWTE.DIRECT_HTML:
+                    result += String(data);
                     break;
                 case LWTE.EACH:
                     for(var j = 0, lenj = data[template[i][1]].length; j < lenj; j ++){

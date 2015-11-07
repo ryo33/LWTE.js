@@ -26,6 +26,14 @@ describe("use", function(){
             lwte.addTemplate("a", "{html a}");
             lwte.useTemplate("a", {a: "<>&\"'"}).should.be.exactly("<>&\"'");
         });
+        it("direct", function(){
+            lwte.addTemplate("a", "{}");
+            lwte.useTemplate("a", "<>&\"'").should.be.exactly("&lt;&gt;&amp;&quot;&#039;");
+        });
+        it("direct_html", function(){
+            lwte.addTemplate("a", "{html}");
+            lwte.useTemplate("a", "<>&\"'").should.be.exactly("<>&\"'");
+        });
         it("if", function(){
             lwte.addTemplate("a", "{if a}a{elif b}b{elif c}c{elif d}d{elif e}e{elif f}f{else}else{/if}{if f e}fe{elif f g}fg{/if}");
             lwte.useTemplate("a", {a: false, b: [], c: {}, d: null, e: undefined, f: 0, g: true}).should.be.exactly("ffg");
