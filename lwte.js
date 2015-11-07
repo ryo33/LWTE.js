@@ -12,7 +12,6 @@
         arguments.callee.USE = 5;
         arguments.callee.HTML = 6;
         arguments.callee.DIRECT = 7;
-        arguments.callee.DIRECT_HTML = 8;
     }
     LWTE.prototype['useTemplate'] = useTemplate; //("TEMPLATE_NAME", DATA)
     LWTE.prototype['addTemplate'] = addTemplate; //("TEMPLATE_NAME", "TEMPLATE")
@@ -24,7 +23,7 @@
     LWTE.prototype['_evaluateVariable'] = _evaluateVariable;
     LWTE.prototype['_escapeHtml'] = _escapeHtml;
     function _parseTemplate(str){
-        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, DEFAULT = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14, USE = 15, HTML = 16;
+        var LITERAL = 0, EACH = 1, IF = 2, ELIF = 3, ELSE = 4, ID = 5, SWITCH = 6, CASE = 7, DEFAULT = 8, L_CB = 9, R_CB = 10, EACH_END = 12, IF_END = 13, SWITCH_END = 14, USE = 15, HTML = 16, DIRECT = 17;
         var tokens = [];
         //lexer
         var token = "";
@@ -405,8 +404,6 @@
                         case HTML:
                             if(in_cb.length == 2){
                                 node.push([LWTE.HTML, in_cb[1][1]]);
-                            }else if(in_cb.length == 1){
-                                node.push([LWTE.DIRECT_HTML]);
                             }else{
                                 return faild_token(tokens[progress]);
                             }
@@ -469,9 +466,6 @@
                     break;
                 case LWTE.DIRECT:
                     result += this._escapeHtml(String(data));
-                    break;
-                case LWTE.DIRECT_HTML:
-                    result += String(data);
                     break;
                 case LWTE.EACH:
                     for(var j = 0, lenj = data[template[i][1]].length; j < lenj; j ++){
