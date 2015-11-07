@@ -37,6 +37,8 @@ describe("use", function(){
         it("each", function(){
             lwte.addTemplate("a", "{each a}aa{item}{if a}aa{/if}{/each}");
             lwte.useTemplate("a", {a: [{a: true, item: "b"}, {item: "c"}, {item: "d"}, {item: "e"}]}).should.be.exactly("aabaaaacaadaae");
+            lwte.addTemplate("a", "{each a}[{each b}({item}){/each}]{/each}");
+            lwte.useTemplate("a", {a: [{b: [{item: "e"}, {item: "f"}]}, {b: [{item: "g"}, {item: "h"}]}]}).should.be.exactly("[(e)(f)][(g)(h)]");
         });
         it("use", function(){
             lwte.addTemplate("a", "bbbb{item}");
