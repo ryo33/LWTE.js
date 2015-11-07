@@ -1,7 +1,7 @@
 # LWTE.js
 This is the Light Weight Template Engine for JavaScript.  
-#Description
-##Example  
+## Description
+### Example  
 Template:  
 ```html
 <p>{text}</p>
@@ -56,12 +56,12 @@ Result:
 </table>
 ```
 That's almost all!  
-##How to write templates  
+### How to write templates  
 Briefly, just write `{VAR_NAME}`.  
 But there are 11 reserved keywords.  
 `if`, `elif`, `else`, `/if`, `each`, `/each`, `switch`, `case`, `default`, `/switch`, `use`, `html`  
 You can't use them as variable name even if they contain capital letters.  
-###Syntax  
+### Syntax  
 `DATA` is a data which is given to `lwte.useTemplate`.  
 - `{}`  
 Displays `DATA` with html-escape.  
@@ -81,13 +81,13 @@ You can use this just like `lwte.useTemplate(TEMPLATE_NAME, DATA[VAR_NAME])`.
 - `{html VAR_NAME}`  
 Displays `DATA[VAR_NAME]` **without html-escape**.
 
-###evaluating variable  
+### Evaluating variable  
 false : `false`, `undefined`, `null`, `[]`, and `{}`  
 true : all other  
 
-#Requirement  
+## Requirement  
 This is a stand-alone JavaScript library.
-#Usage  
+## Usage  
 Do `npm install lwte` or  
 clone this repository.  
 And require `lwte.js`.    
@@ -97,7 +97,7 @@ lwte.addTemplate("TEMPLATE_NAME", "TEMPLATE"); //add templates
 var result = lwte.useTemplate("TEMPLATE_NAME", DATA); //use templates
 //also you can save compiled templates
 ```
-#License  
+## License  
   [License](LICENSE)
-#Author  
+## Author  
   [ryo33](https://github.com/ryo33/ "ryo33's github page")
