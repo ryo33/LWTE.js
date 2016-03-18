@@ -75,7 +75,7 @@ You can use this just like general foreach-statement.
 - `{switch VAR_NAME}{case VALUE ...}{default}{/switch}`  
 You can use this just like general switch-statement.  
 But switch-statement of LWTE.js doesn't do fall through.  
-Case-statements which has the value of the variable will be executed.  
+Case-statements which has one or more true values will be executed.  
 - `{use TEMPLATE_NAME VAR_NAME}`  
 You can use this just like `lwte.useTemplate(TEMPLATE_NAME, DATA[VAR_NAME])`.  
 - `{html VAR_NAME}`  
